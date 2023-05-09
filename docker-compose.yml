@@ -1,0 +1,38 @@
+version: '3'
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: laravel
+        ports:
+            - "${APP_PORT}:80"
+        environment:
+            - DB_CONNECTION=mysql
+            - DB_HOST=mysql_db
+            - DB_PORT=${DB_PORT}
+            - DB_DATABASE=${DB_DATABASE}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - db
+    db:
+        image: mysql:8.0
+        container_name: mysql_db
+        restart: always
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+            MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+            MYSQL_USER_HOST: 'localhost'
+        volumes:
+            - db_data:/var/lib/mysql
+        ports:
+            - "3307:3306"
+volumes:
+    db_data:
